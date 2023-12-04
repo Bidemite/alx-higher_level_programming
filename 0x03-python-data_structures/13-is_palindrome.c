@@ -1,53 +1,56 @@
 #include "lists.h"
-#include <stdlib.h>
-#include <stdio.h>
+
+int recursive(listint_t **head, listint_t *tail);
 
 /**
-*add_nodeint - it adds a new node at the beginning of a listint_t list;
-*@head: the head of listint_t, 
-*@n: initialized to add in listint_t list
-*Return: the address of the new element, or NULL if it failed
-*/
-listint_t *add_nodeint(listint_t **head, const int n)
-{
-	listint_t *new;
-
-	new = malloc(sizeof(listint_t));
-	if (new == NULL)
-		return (NULL);
-	new->n = n;
-	new->next = *head;
-	*head = new;
-	return (new);
-}
-/**
-*is_palindrome - it identify if a singly linked list is palindrome, 
-*@head: the head of listint_t, 
-*Return: 1 if it is palindrome else 0
-*/
+ * is_palindrome - This function determines whether a single linked list contained 
+ * data(n) which stores an integers, forms a palindrome. Such as. 1, 3, 3, 1 is a
+ * palindrome. 1, 3, 4 is not.
+ *
+ * @head: it is a double pointer to the head of the linked list.
+ *
+ * Return: if the single linked list forms a palidrome of integers 1 will return. 0 if
+ * otherwise.
+ */
 int is_palindrome(listint_t **head)
 {
-	listint_t *head2 = *head;
-	listint_t *aux = NULL, *aux2 = NULL;
+	listint_t *front;
 
-	if (*head == NULL || head2->next == NULL)
+	if (head == NULL || *head == NULL)
 		return (1);
-	while (head2 != NULL)
+
+	front = *head;
+	return (recursive(&front, *head));
+}
+
+/**
+ * recursive - recursive helper function in which head begins at the start of
+ * the singly linked list and tail begins at the center. Base case is when tail
+ * reaches the end of the linked list and we begin checking the first and last
+ * nodes, having *head slowly work towards the end of the linked list. There is
+ * overlap when performing checks. Runtime at 2n..
+ *
+ * @head: the double pointer to the head, needs to be able to change as call stacks
+ * are popped.
+ * @tail: Pointer to the center of the singly linked list during first call.
+ *
+ * Return: 1 if the singly linked list is a palindrome, 0 otherwise.
+ */
+int recursive(listint_t **head, listint_t *tail)
+{
+
+	if (tail->next)
 	{
-		add_nodeint(&aux, head2->n);
-		head2 = head2->next;
-	}
-	aux2 = aux;
-	while (*head != NULL)
-	{
-		if ((*head)->n != aux2->n)
-		{
-			free_listint(aux);
+		if (recursive(head, tail->next) == 0)
 			return (0);
-		}
-		*head = (*head)->next;
-		aux2 = aux2->next;
 	}
-	free_listint(aux);
-	return (1);
+	if ((*head)->n != tail->n)
+	{
+		return (0);
+	}
+	else
+	{
+		*head = (*head)->next;
+		return (1);
+	}
 }
